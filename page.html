@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<hmtl>
+    <p>
+        <p>
+            <input type="text" id="apiUrl" placeholder="apiUrl"><br>
+            <input type="text" id="idInstance" placeholder="idInstance"><br>
+            <input type="text" id="apiTokenInstance" placeholder="apiTokenInstance"><br>
+            <button id="getSettings">getSettings</button><br>
+            <button id="getStateInstance">getStateInstance</button><br>
+        </p>
+        <p>
+            <input type="text" id="chatId0" placeholder="chatId"><br>
+            <input type="text" id="message" placeholder="message"><br>
+            <button id="sendMessage">sendMessage</button><br>
+        </p>
+        <p>
+            <input type="text" id="chatId1" placeholder="chatId"><br>
+            <input type="text" id="urlFile" placeholder="urlFile"><br>
+            <button id="sendFileByUrl">sendFileByUrl</button><br>
+        </p>
+    </p>
+    <p>
+        <textarea id="textOutput" readonly rows="50" cols="100"></textarea>
+    </p>
+
+    <script>
+        function sendRequest(apiMethod, reqMethod, data = null) {
+            const apiUrl = document.getElementById("apiUrl").value;
+            const idInstance = document.getElementById("idInstance").value;
+            const apiTokenInstance = document.getElementById("apiTokenInstance").value;
+            urlString = `${apiUrl}/wainstance${idInstance}/${apiMethod}/${apiTokenInstance}`
+            console.log(urlString)
+            console.log(data)
+            if (reqMethod == "POST") {
+                fetch(urlString,
+                {
+                        method: reqMethod,
+                        body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(data => document.getElementById("textOutput").value = JSON.stringify(data));
+            } else if (reqMethod == "GET") {
+                fetch(urlString,
+                {
+                        method: reqMethod
+                })
+                    .then(response => response.json())
+                    .then(data => document.getElementById("textOutput").value = JSON.stringify(data));
+            }
+        }
+
+        document.getElementById("getSettings")
+            .addEventListener("click", ()=>{
+                sendRequest("getSettings", "GET")
+            });
+
+        document.getElementById("getStateInstance")
+            .addEventListener("click", ()=>{
+                sendRequest("getStateInstance", "GET")
+            });
+
+        document.getElementById("sendMessage")
+            .addEventListener("click", ()=>{
+                sendRequest("sendMessage", "POST", {
+                    chatId: document.getElementById("chatId0").value,
+                    message: document.getElementById("message").value,
+            })});
+
+        document.getElementById("sendFileByUrl")
+            .addEventListener("click", ()=>{
+                sendRequest("sendFileByUrl", "POST", {
+                    chatId: document.getElementById("chatId1").value,
+                    urlFile: document.getElementById("urlFile").value,
+                    fileName: document.getElementById("urlFile").value.split("/").pop(),
+            })});
+    </script>
+</hmtl>
